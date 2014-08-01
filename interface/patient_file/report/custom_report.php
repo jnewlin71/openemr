@@ -48,12 +48,13 @@ $GLOBALS['PATIENT_REPORT_ACTIVE'] = true;
 $PDF_OUTPUT = empty($_POST['pdf']) ? 0 : intval($_POST['pdf']);
 
 if ($PDF_OUTPUT) {
-  require_once("$srcdir/html2pdf/html2pdf.class.php");
-  // $pdf = new HTML2PDF('P', 'Letter', 'en', array(5, 5, 5, 5) );  // add a little margin 5cm all around TODO: add to globals 
-  $pdf = new HTML2PDF ($GLOBALS['pdf_layout'],
-                       $GLOBALS['pdf_size'],
-                       $GLOBALS['pdf_language'],
-                       array($GLOBALS['pdf_left_margin'],$GLOBALS['pdf_top_margin'],$GLOBALS['pdf_right_margin'],$GLOBALS['pdf_bottom_margin'])
+  require_once("$srcdir/mpdf/mpdf.php");
+  $pdf = new mpdf ('',
+                   $GLOBALS['pdf_size'],
+                   $GLOBALS['pdf_left_margin'],
+                   $GLOBALS['pdf_right_margin'],
+		   $GLOBALS['pdf_top_margin'],
+		   $GLOBALS['pdf_bottom_margin'],'2','5')
           ); 
   ob_start();
 }
@@ -848,14 +849,15 @@ foreach ($ar as $key => $val) {
             $content = getContent();
             // $pdf->setDefaultFont('Arial');
             $pdf->writeHTML($content, false);
-            $pagecount = $pdf->pdf->setSourceFile($from_file);
+	    $pdf->setImportUse();
+            $pagecount = $pdf->setSourceFile($from_file);
             for($i = 0; $i < $pagecount; ++$i){
-              $pdf->pdf->AddPage();  
-              $itpl = $pdf->pdf->importPage($i + 1, '/MediaBox');
-              $pdf->pdf->useTemplate($itpl);
+              $pdf->AddPage();  
+              $itpl = $pdf->importPage($i + 1, '/MediaBox');
+              $pdf->useTemplate($itpl);
             }
             // Make sure whatever follows is on a new page.
-            $pdf->pdf->AddPage();
+            $pdf->AddPage();
             // Resume output buffering and the above-closed tags.
             ob_start();
             echo "<div><div class='text documents'>\n";

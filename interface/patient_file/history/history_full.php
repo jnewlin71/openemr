@@ -171,6 +171,14 @@ div.tab {
 	height: auto;
 	width: auto;
 }
+@media print {
+	input[type=checkbox], input[type=radio] {
+		outline: double 1px black;
+	}
+	input[type=text] {
+		border: double 1px black;
+	}
+}
 </style>
 
 </head>
